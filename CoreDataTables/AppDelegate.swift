@@ -24,7 +24,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
 
         let masterNavigationController = splitViewController.viewControllers[0] as! UINavigationController
         let controller = masterNavigationController.topViewController as! MasterViewController
-        controller.managedObjectContext = self.persistentContainer.viewContext
+        if #available(iOS 10.0, *) {
+            controller.managedObjectContext = self.persistentContainer.viewContext
+        } else {
+            controller.managedObjectContext = self.prior10Context
+        }
         return true
     }
 
@@ -65,6 +69,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     }
     // MARK: - Core Data stack
 
+    @available(iOS 10.0, *)
     lazy var persistentContainer: NSPersistentContainer = {
         /*
          The persistent container for the application. This implementation
@@ -95,7 +100,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     // MARK: - Core Data Saving support
 
     func saveContext () {
-        let context = persistentContainer.viewContext
+        let context: NSManagedObjectContext
+        if #available(iOS 10.0, *) {
+            context = persistentContainer.viewContext
+        } else {
+            context = prior10Context
+        }
         if context.hasChanges {
             do {
                 try context.save()
@@ -107,6 +117,33 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
             }
         }
     }
+    
+    // for prior to 10.0
+    lazy var applicationDocumentsDirectory: NSURL = {
+        return FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first! as NSURL
+    }()
+    lazy var managedObjectModel: NSManagedObjectModel = {
+        let modelURL = Bundle.main.url(forResource: "CoreDataTables", withExtension: "momd")!
+        return NSManagedObjectModel(contentsOf: modelURL)!
+    }()
+    lazy var persistentStoreCoordinator: NSPersistentStoreCoordinator = {
+        let coordinator = NSPersistentStoreCoordinator(managedObjectModel: self.managedObjectModel)
+        let url = self.applicationDocumentsDirectory.appendingPathComponent("AppName.sqlite")
+        do {
+            try coordinator.addPersistentStore(ofType: NSSQLiteStoreType, configurationName: nil,
+                                               at: url, options: nil)
+        } catch {
+            // Replace this with code to handle the error appropriately.
+            fatalError("persistentStore add error: \(error)")
+        }
+        return coordinator
+    }()
+    lazy var prior10Context: NSManagedObjectContext = {     // usually named managedObjectContext
+        let coordinator = self.persistentStoreCoordinator
+        var managedObjectContext = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
+        managedObjectContext.persistentStoreCoordinator = coordinator
+        return managedObjectContext
+    }()
 
 }
 
