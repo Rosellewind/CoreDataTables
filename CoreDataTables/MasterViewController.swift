@@ -17,15 +17,32 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.title = "Parents"
+        
+        // set the edit button
+        self.navigationItem.rightBarButtonItem = self.editButtonItem
+        
+        // set the add button
+        self.navigationController?.setToolbarHidden(false, animated: false)
+        let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addTapped(sender:)))
+        self.setToolbarItems([space, addButton], animated: false)
+        
+        
+        
+        
+        
+        
+        
         // Do any additional setup after loading the view, typically from a nib.
-        self.navigationItem.leftBarButtonItem = self.editButtonItem
-
-        let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(insertNewObject(_:)))
-        self.navigationItem.rightBarButtonItem = addButton
-        if let split = self.splitViewController {
-            let controllers = split.viewControllers
-            self.detailViewController = (controllers[controllers.count-1] as! UINavigationController).topViewController as? DetailViewController
-        }
+//        self.navigationItem.leftBarButtonItem = self.editButtonItem
+//
+//        let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(insertNewObject(_:)))
+//        self.navigationItem.rightBarButtonItem = addButton
+//        if let split = self.splitViewController {
+//            let controllers = split.viewControllers
+//            self.detailViewController = (controllers[controllers.count-1] as! UINavigationController).topViewController as? DetailViewController
+        
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -38,17 +55,39 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         // Dispose of any resources that can be recreated.
     }
 
-    func insertNewObject(_ sender: Any) {
+    func addTapped(sender: UIBarButtonItem) {
+        let alert = UIAlertController(title: "Add A Parent", message: nil, preferredStyle: .alert)
+        alert.addTextField { (textField: UITextField) in
+            textField.placeholder = "Name"
+        }
+        alert.addTextField { (textField: UITextField) in
+            textField.placeholder = "Group"
+        }
+        alert.addAction(UIAlertAction(title: "Save", style: .default, handler: { (alertAction: UIAlertAction) in
+            let nameField = alert.textFields![0] as UITextField
+            if nameField.text!.characters.count > 0 {
+                let groupField = alert.textFields![1] as UITextField
+                self.insertNewParent(name: nameField.text!, group: groupField.text!)
+            }
+        }))
+        alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: nil))
+        
+        self.present(alert, animated: true, completion: nil)
+    }
+
+    func insertNewParent(name: String, group: String?) {
         let context = self.fetchedResultsController.managedObjectContext
-        let newEvent: Event
+        let newParent: Parent
         if #available(iOS 10.0, *) {
-            newEvent = Event(context: context)
+            newParent = Parent(context: context)
         } else {
-            newEvent = NSEntityDescription.insertNewObject(forEntityName: "Event", into: context) as! Event
+            newParent = NSEntityDescription.insertNewObject(forEntityName: "Parent", into: context) as! Parent
         }
         
         // If appropriate, configure the new managed object.
-        newEvent.timestamp = NSDate()
+        newParent.id = UUID().uuidString
+        newParent.name = name
+        newParent.group = group
 
         // Save the context.
         do {
@@ -64,32 +103,31 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     // MARK: - Segues
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "showDetail" {
-            if let indexPath = self.tableView.indexPathForSelectedRow {
-            let object = self.fetchedResultsController.object(at: indexPath)
-                let controller = (segue.destination as! UINavigationController).topViewController as! DetailViewController
-                controller.detailItem = object
-                controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem
-                controller.navigationItem.leftItemsSupplementBackButton = true
-            }
+        if let vc = segue.destination as? Master3ViewController, let cell = sender as? UITableViewCell, let indexPath = tableView.indexPath(for: cell) {
+            vc.myParent = fetchedResultsController.object(at: indexPath) as? Parent
+            vc.managedObjectContext = managedObjectContext
         }
+        
+        
     }
 
     // MARK: - Table View
 
     override func numberOfSections(in tableView: UITableView) -> Int {
+        print("numberOfSections: \(self.fetchedResultsController.sections?.count ?? 1)")
         return self.fetchedResultsController.sections?.count ?? 0
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         let sectionInfo = self.fetchedResultsController.sections![section]
+        print("numberOfRows: \(sectionInfo.numberOfObjects) inSection: \(section)")
         return sectionInfo.numberOfObjects
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
-        let event = self.fetchedResultsController.object(at: indexPath)
-        self.configureCell(cell, withEvent: event)
+        let parent = self.fetchedResultsController.object(at: indexPath)
+        self.configureCell(cell, withParent: parent as! Parent)
         return cell
     }
 
@@ -101,7 +139,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             let context = self.fetchedResultsController.managedObjectContext
-            context.delete(self.fetchedResultsController.object(at: indexPath))
+            context.delete(self.fetchedResultsController.object(at: indexPath) as! NSManagedObject)
                 
             do {
                 try context.save()
@@ -114,30 +152,35 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         }
     }
 
-    func configureCell(_ cell: UITableViewCell, withEvent event: Event) {
-        cell.textLabel!.text = event.timestamp!.description
+    func configureCell(_ cell: UITableViewCell, withParent parent: Parent) {
+        cell.textLabel!.text = parent.name
+    }
+    
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        print("titleForHeader: \(fetchedResultsController.sections![section].name), in section:\(section)")
+        return fetchedResultsController.sections![section].name
     }
 
     // MARK: - Fetched results controller
 
-    var fetchedResultsController: NSFetchedResultsController<Event> {
+    var fetchedResultsController: NSFetchedResultsController<NSFetchRequestResult> {
         if _fetchedResultsController != nil {
             return _fetchedResultsController!
         }
-        
-        let fetchRequest: NSFetchRequest<Event> = Event.fetchRequest()
+
+        let fetchRequest: NSFetchRequest<Parent> = Parent.fetchRequest()
         
         // Set the batch size to a suitable number.
         fetchRequest.fetchBatchSize = 20
         
         // Edit the sort key as appropriate.
-        let sortDescriptor = NSSortDescriptor(key: "timestamp", ascending: false)
+        let sortDescriptor = NSSortDescriptor(key: "group", ascending: true)
         
         fetchRequest.sortDescriptors = [sortDescriptor]
         
         // Edit the section name key path and cache name if appropriate.
         // nil for section name key path means "no sections".
-        let aFetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.managedObjectContext!, sectionNameKeyPath: nil, cacheName: "Master")
+        let aFetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.managedObjectContext!, sectionNameKeyPath: "group", cacheName: nil) as! NSFetchedResultsController<NSFetchRequestResult>
         aFetchedResultsController.delegate = self
         _fetchedResultsController = aFetchedResultsController
         
@@ -152,7 +195,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         
         return _fetchedResultsController!
     }    
-    var _fetchedResultsController: NSFetchedResultsController<Event>? = nil
+    var _fetchedResultsController: NSFetchedResultsController<NSFetchRequestResult>? = nil
 
     func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         self.tableView.beginUpdates()
@@ -176,7 +219,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             case .delete:
                 tableView.deleteRows(at: [indexPath!], with: .fade)
             case .update:
-                self.configureCell(tableView.cellForRow(at: indexPath!)!, withEvent: anObject as! Event)
+                self.configureCell(tableView.cellForRow(at: indexPath!)!, withParent: anObject as! Parent)
             case .move:
                 tableView.moveRow(at: indexPath!, to: newIndexPath!)
         }
