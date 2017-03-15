@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		233FD2F11E78975000D2E34C /* CoreDataTables.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 233FD2EF1E78975000D2E34C /* CoreDataTables.xcdatamodeld */; };
 		233FD2F31E789B9200D2E34C /* Master2ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 233FD2F21E789B9200D2E34C /* Master2ViewController.swift */; };
-		233FD3181E79B1C100D2E34C /* Master3ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 233FD3171E79B1C100D2E34C /* Master3ViewController.swift */; };
+		2382D87C1E79B94800D6079C /* ReadMe.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 2382D87B1E79B94800D6079C /* ReadMe.rtf */; };
 		23D1A8A31E787D1200B6EC08 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23D1A8A21E787D1200B6EC08 /* AppDelegate.swift */; };
 		23D1A8A81E787D1200B6EC08 /* MasterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23D1A8A71E787D1200B6EC08 /* MasterViewController.swift */; };
 		23D1A8AA1E787D1200B6EC08 /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23D1A8A91E787D1200B6EC08 /* DetailViewController.swift */; };
@@ -21,7 +21,7 @@
 /* Begin PBXFileReference section */
 		233FD2F01E78975000D2E34C /* CoreDataTables.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = CoreDataTables.xcdatamodel; sourceTree = "<group>"; };
 		233FD2F21E789B9200D2E34C /* Master2ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Master2ViewController.swift; sourceTree = "<group>"; };
-		233FD3171E79B1C100D2E34C /* Master3ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Master3ViewController.swift; sourceTree = "<group>"; };
+		2382D87B1E79B94800D6079C /* ReadMe.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; path = ReadMe.rtf; sourceTree = "<group>"; };
 		23D1A89F1E787D1200B6EC08 /* CoreDataTables.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CoreDataTables.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		23D1A8A21E787D1200B6EC08 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		23D1A8A71E787D1200B6EC08 /* MasterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MasterViewController.swift; sourceTree = "<group>"; };
@@ -63,9 +63,9 @@
 			isa = PBXGroup;
 			children = (
 				23D1A8A21E787D1200B6EC08 /* AppDelegate.swift */,
+				2382D87B1E79B94800D6079C /* ReadMe.rtf */,
 				23D1A8A71E787D1200B6EC08 /* MasterViewController.swift */,
 				233FD2F21E789B9200D2E34C /* Master2ViewController.swift */,
-				233FD3171E79B1C100D2E34C /* Master3ViewController.swift */,
 				23D1A8A91E787D1200B6EC08 /* DetailViewController.swift */,
 				23D1A8AB1E787D1200B6EC08 /* Main.storyboard */,
 				23D1A8AE1E787D1200B6EC08 /* Assets.xcassets */,
@@ -138,6 +138,7 @@
 			files = (
 				23D1A8B21E787D1200B6EC08 /* LaunchScreen.storyboard in Resources */,
 				23D1A8AF1E787D1200B6EC08 /* Assets.xcassets in Resources */,
+				2382D87C1E79B94800D6079C /* ReadMe.rtf in Resources */,
 				23D1A8AD1E787D1200B6EC08 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -153,7 +154,6 @@
 				233FD2F11E78975000D2E34C /* CoreDataTables.xcdatamodeld in Sources */,
 				23D1A8A81E787D1200B6EC08 /* MasterViewController.swift in Sources */,
 				233FD2F31E789B9200D2E34C /* Master2ViewController.swift in Sources */,
-				233FD3181E79B1C100D2E34C /* Master3ViewController.swift in Sources */,
 				23D1A8AA1E787D1200B6EC08 /* DetailViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -28,7 +28,7 @@ class Master2ViewController: MasterViewController {
         }
         alert.addAction(UIAlertAction(title: "Save", style: .default, handler: { (alertAction: UIAlertAction) in
             let nameField = alert.textFields![0] as UITextField
-            self.insertNewChild(name: nameField.text!, parent: self.myParent!)////!
+            self.insertNewChild(name: nameField.text!, parent: self.myParent!)
         }))
         alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: nil))
         
@@ -47,9 +47,8 @@ class Master2ViewController: MasterViewController {
         // If appropriate, configure the new managed object.
         newChild.id = UUID().uuidString
         newChild.name = name
-        newChild.parent = parent////or just .parent =
+        newChild.parent = parent
         
-        // Save the context.////infunc
         do {
             try context.save()
         } catch {
@@ -63,9 +62,6 @@ class Master2ViewController: MasterViewController {
     // MARK: - Segues
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-//        if let vc = segue.destination as? Master2ViewController, let cell = sender as? UITableViewCell, let indexPath = tableView.indexPath(for: cell) {
-//            vc.myParent = fetchedResultsController.object(at: indexPath) as? Parent
-//        }
         if segue.identifier == "showDetail" {
             if let indexPath = self.tableView.indexPathForSelectedRow {
                 let object = self.fetchedResultsController.object(at: indexPath) as! Child
@@ -86,12 +82,10 @@ class Master2ViewController: MasterViewController {
         return cell
     }
     
-    
     func configureCell(_ cell: UITableViewCell, withChild child: Child) {
         cell.textLabel!.text = child.name
     }
 
-    
     // MARK: - Fetched results controller
     
     
@@ -115,13 +109,11 @@ class Master2ViewController: MasterViewController {
         
         fetchRequest.sortDescriptors = [sortDescriptor]
         print(myParent.id!)
-//        fetchRequest.predicate = NSPredicate(format: "parent.id == %@", myParent.id!)
-        fetchRequest.predicate = NSPredicate(format: "%K == %@", "self.parent.id", myParent.id!)
-        ////id not optional
+        fetchRequest.predicate = NSPredicate(format: "%K == %@", "parent.id", myParent.id!)
         
         // Edit the section name key path and cache name if appropriate.
         // nil for section name key path means "no sections".
-        let aFetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.managedObjectContext!, sectionNameKeyPath: nil, cacheName: nil)
+        let aFetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.managedObjectContext!, sectionNameKeyPath: nil, cacheName: nil) // ****cache name needs to be different for every fetchedResults****
         aFetchedResultsController.delegate = self
         _fetchedResultsController = aFetchedResultsController
         
@@ -139,7 +131,6 @@ class Master2ViewController: MasterViewController {
                 print("child: \(child.name!), myParent: \(myParent.name!), parent: \(child.parent!.name!)")
             }
         }
-
         return _fetchedResultsController!
     }
 

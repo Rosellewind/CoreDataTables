@@ -27,22 +27,11 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
         let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addTapped(sender:)))
         self.setToolbarItems([space, addButton], animated: false)
-        
-        
-        
-        
-        
-        
-        
-        // Do any additional setup after loading the view, typically from a nib.
-//        self.navigationItem.leftBarButtonItem = self.editButtonItem
-//
-//        let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(insertNewObject(_:)))
-//        self.navigationItem.rightBarButtonItem = addButton
-//        if let split = self.splitViewController {
-//            let controllers = split.viewControllers
-//            self.detailViewController = (controllers[controllers.count-1] as! UINavigationController).topViewController as? DetailViewController
-        
+
+        if let split = self.splitViewController {
+            let controllers = split.viewControllers
+            self.detailViewController = (controllers[controllers.count-1] as! UINavigationController).topViewController as? DetailViewController
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -103,7 +92,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     // MARK: - Segues
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let vc = segue.destination as? Master3ViewController, let cell = sender as? UITableViewCell, let indexPath = tableView.indexPath(for: cell) {
+        if let vc = segue.destination as? Master2ViewController, let cell = sender as? UITableViewCell, let indexPath = tableView.indexPath(for: cell) {
             vc.myParent = fetchedResultsController.object(at: indexPath) as? Parent
             vc.managedObjectContext = managedObjectContext
         }
@@ -180,7 +169,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         
         // Edit the section name key path and cache name if appropriate.
         // nil for section name key path means "no sections".
-        let aFetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.managedObjectContext!, sectionNameKeyPath: "group", cacheName: nil) as! NSFetchedResultsController<NSFetchRequestResult>
+        let aFetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.managedObjectContext!, sectionNameKeyPath: "group", cacheName: nil) as! NSFetchedResultsController<NSFetchRequestResult> // ****cache name needs to be different for every fetchedResults****
         aFetchedResultsController.delegate = self
         _fetchedResultsController = aFetchedResultsController
         
